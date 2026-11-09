@@ -1,122 +1,74 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react'
+import { videos } from './videos.js'
+import Header from './components/Header.jsx'
+import Hero from './components/Hero.jsx'
+import VideoCard from './components/VideoCard.jsx'
+import VideoModal from './components/VideoModal.jsx'
+import About from './components/About.jsx'
+import Footer from './components/Footer.jsx'
 
-function App() {
-  const [count, setCount] = useState(0)
+// Each video gets a shareable link: ma-ry.uk/#video-3
+const indexFromHash = () => {
+  const m = window.location.hash.match(/^#video-(\d+)$/)
+  const i = m ? Number(m[1]) - 1 : -1
+  return i >= 0 && i < videos.length ? i : null
+}
+
+export default function App() {
+  const [current, setCurrent] = useState(indexFromHash)
+
+  useEffect(() => {
+    const onHash = () => setCurrent(indexFromHash())
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+
+  const open = (i) => {
+    history.replaceState(null, '', `#video-${i + 1}`)
+    setCurrent(i)
+  }
+  const close = () => {
+    history.replaceState(null, '', window.location.pathname)
+    setCurrent(null)
+  }
+  const step = (d) => open((current + d + videos.length) % videos.length)
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      <Hero>
+        <Header />
+      </Hero>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
+      <main>
+        <section id="videos" className="section">
+          <div className="section-title">
+            <span aria-hidden="true" />
+            <h2>Videos</h2>
+            <span aria-hidden="true" />
+          </div>
+          <ul className="video-grid">
+            {videos.map((v, i) => (
+              <li key={v.file}>
+                <VideoCard video={v} onPlay={() => open(i)} />
+              </li>
+            ))}
           </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+        <About />
+      </main>
+
+      <Footer />
+
+      {current !== null && (
+        <VideoModal
+          video={videos[current]}
+          onClose={close}
+          onPrev={() => step(-1)}
+          onNext={() => step(1)}
+          hasMany={videos.length > 1}
+        />
+      )}
     </>
   )
 }
-
-export default App

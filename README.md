@@ -1,16 +1,28 @@
-# React + Vite
+# ma-ry.uk
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A fan site for Moon Lovers: Scarlet Heart Ryeo. Built with React and Vite, hosted on Cloudflare. The videos are stored in R2.
 
-Currently, two official plugins are available:
+## Change the videos
+Edit **`src/videos.js`**:
+- `VIDEO_BASE`: your R2 bucket's public address (e.g. `https://videos.ma-ry.uk`)
+- one entry per video: `file` (the exact name in R2), `title`, `episode`, and optionally `thumb` and `description`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Run it on your computer
+```bash
+npm install
+npm run dev
+```
 
-## React Compiler
+## Publish
+```bash
+git add .
+git commit -m "Update site"
+git push
+```
+Cloudflare rebuilds the site automatically.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Files
+- `public/`: background image, logo and favicons
+- `src/App.css`: all styles (colours are at the top)
+- `src/components/`: Header, Hero, VideoCard, VideoModal, About, Footer
+- `src/components/Footer.jsx`: contact email (`CONTACT_EMAIL`)
